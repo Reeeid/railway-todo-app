@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useSignup } from "~/hooks/useSignup";
 import { useId } from "~/hooks/useId";
@@ -15,10 +15,9 @@ const SignUp = () => {
 
   const onSubmit = useCallback(
     (data) => {
-
       setIsSubmitting(true);
 
-      signup({ email : data.email, name : data.name, password : data.password})
+      signup({ email: data.email, name: data.name, password: data.password })
         .catch((err) => {
           setErrorMessage(`サインアップに失敗しました: ${err.message}`);
         })
@@ -35,12 +34,13 @@ const SignUp = () => {
   }
 
   return (
-    <SignField id={id}
-     isSignUp={true}
-     errorMessage={errorMessage}
-     onSubmit={onSubmit}
-     SubmitState={isSubmitting}>
-     </SignField>
+    <SignField
+      id={id}
+      isSignUp={true}
+      errorMessage={errorMessage}
+      onSubmit={onSubmit}
+      SubmitState={isSubmitting}
+    ></SignField>
   );
 };
 
