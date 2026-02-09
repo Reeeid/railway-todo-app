@@ -14,6 +14,7 @@ export const TaskCreateForm = () => {
 
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
+  const [limit, setLimit] = useState("");
   const [done, setDone] = useState(false);
 
   const handleToggle = useCallback(() => {
@@ -39,11 +40,12 @@ export const TaskCreateForm = () => {
       setFormState("initial");
       setDone(false);
     }, 100);
-  }, [title, detail]);
+  }, [title, limit, detail]);
 
   const handleDiscard = useCallback(() => {
     setTitle("");
     setDetail("");
+    setLimit("");
     setFormState("initial");
     setDone(false);
   }, []);
@@ -53,8 +55,8 @@ export const TaskCreateForm = () => {
       event.preventDefault();
 
       setFormState("submitting");
-
-      void dispatch(createTask({ title, detail, done }))
+      const ISOdate = limit ? new Date(limit).toISOString() : null;
+      void dispatch(createTask({ title, detail, done, limit : ISOdate }))
         .unwrap()
         .then(() => {
           handleDiscard();
@@ -64,7 +66,7 @@ export const TaskCreateForm = () => {
           setFormState("focused");
         });
     },
-    [title, detail, done],
+    [title, detail, done, limit],
   );
 
   useEffect(() => {
@@ -127,6 +129,13 @@ export const TaskCreateForm = () => {
       </div>
       {formState !== "initial" && (
         <div>
+          <input
+            type="datetime-local"
+            value={limit}
+            onChange={(e) => setLimit(e.target.value)}
+            onBlur={handleBlur}
+            disabled={formState === "submitting"}
+          />
           <textarea
             ref={setElemTextarea}
             rows={1}

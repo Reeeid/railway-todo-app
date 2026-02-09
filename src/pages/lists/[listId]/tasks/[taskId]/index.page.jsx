@@ -17,6 +17,7 @@ const EditTask = () => {
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [done, setDone] = useState(false);
+  const [limit, setLimit] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +31,7 @@ const EditTask = () => {
       setTitle(task.title);
       setDetail(task.detail);
       setDone(task.done);
+      setLimit(task.limit ? task.limit.slice(0, 16) : "");
     }
   }, [task]);
 
@@ -44,7 +46,9 @@ const EditTask = () => {
 
       setIsSubmitting(true);
 
-      void dispatch(updateTask({ id: taskId, title, detail, done }))
+      const ISOdate = limit ? new Date(limit).toISOString() : null;
+
+      void dispatch(updateTask({ id: taskId, title, detail, done, limit :ISOdate }))
         .unwrap()
         .then(() => {
           history.push(`/lists/${listId}`);
@@ -56,7 +60,7 @@ const EditTask = () => {
           setIsSubmitting(false);
         });
     },
-    [title, taskId, listId, detail, done],
+    [title, taskId, listId, detail, done, limit],
   );
 
   const handleDelete = useCallback(() => {
@@ -97,6 +101,19 @@ const EditTask = () => {
             onChange={(event) => setTitle(event.target.value)}
           />
         </fieldset>
+        <fieldset className="edit_list__form_field">
+          <label htmlFor={`${id}-limit`} className="edit_list__form_label">
+            Limit
+          </label>
+          <input
+            id={`${id}-limit`}
+            type="datetime-local"
+            value={limit}
+            onChange={(e) => setLimit(e.target.value)}
+            disabled={isSubmitting}
+          />
+        </fieldset>
+
         <fieldset className="edit_list__form_field">
           <label htmlFor={`${id}-detail`} className="edit_list__form_label">
             Description
