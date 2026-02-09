@@ -74,3 +74,7 @@
   font-size: 1rem;
   color: var(--slate-500);
 }
+
+.task_item__limit[data-overdue='true'] {
+  text-decoration: line-through;
+}

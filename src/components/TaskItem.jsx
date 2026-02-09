@@ -1,17 +1,23 @@
 import { useState, useCallback } from "react";
+import dayjs from "dayjs";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { PencilIcon } from "~/icons/PencilIcon";
 import { CheckIcon } from "~/icons/CheckIcon";
 import { updateTask } from "~/store/task";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 import "./TaskItem.css";
 
 export const TaskItem = ({ task }) => {
   const dispatch = useDispatch();
-
   const { listId } = useParams();
-  const { id, title, detail, done } = task;
+  const { id, title, detail, done, limit } = task;
 
+  const hasLimit = Boolean(limit);
+  const setlimit = hasLimit ? dayjs(limit).format("YYYY/MM/DD HH:mm") : ""
+  const remainlimit = hasLimit ? dayjs(limit).fromNow() : ""
+  const isOverdue = hasLimit ? dayjs().isAfter(limit) : false;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleToggle = useCallback(() => {
@@ -44,6 +50,11 @@ export const TaskItem = ({ task }) => {
         <div className="task_item__title" data-done={done}>
           {title}
         </div>
+        {hasLimit && (<div className="task_item__limit" data-overdue={isOverdue}>
+          {setlimit}
+            <span className="task_item__limit_separator"> / </span>
+          {remainlimit}
+        </div>)}
         <div aria-hidden className="task_item__title_spacer"></div>
         <Link
           to={`/lists/${listId}/tasks/${id}`}
