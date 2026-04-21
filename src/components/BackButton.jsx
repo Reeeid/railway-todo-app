@@ -5,9 +5,9 @@ const handleClick = () => {
   window.history.back();
 };
 
-export const BackButton = () => {
+export const BackButton = ({func = handleClick}) => {
   return (
-    <button type="button" onClick={handleClick} className="back_button">
+    <button type="button" onClick={func} className="back_button">
       <ChevronIcon className="back_button__icon" />
       Back
     </button>

@@ -56,7 +56,7 @@ export const TaskCreateForm = () => {
 
       setFormState("submitting");
       const ISOdate = limit ? new Date(limit).toISOString() : null;
-      void dispatch(createTask({ title, detail, done, limit : ISOdate }))
+      void dispatch(createTask({ title, detail, done, limit: ISOdate }))
         .unwrap()
         .then(() => {
           handleDiscard();

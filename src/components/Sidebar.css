@@ -1,3 +1,20 @@
+.sidebar_hamburger{
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+}
+
+.sidebar_hamburger_button{
+  width: 2rem;
+  height: 2rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  position: absolute;
+}
+
 .sidebar {
   position: fixed;
   display: flex;
@@ -10,6 +27,13 @@
   border-right: 1px solid var(--slate-200);
   padding: 2.5rem 1.5rem;
   overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+  z-index: 50;
+}
+
+.sidebar--open{
+  transform: translateX(0);
 }
 
 .sidebar__title {

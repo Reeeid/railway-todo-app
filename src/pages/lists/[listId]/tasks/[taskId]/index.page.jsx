@@ -7,7 +7,7 @@ import { setCurrentList } from "~/store/list";
 import { fetchTasks, updateTask, deleteTask } from "~/store/task";
 import { useId } from "~/hooks/useId";
 
-const EditTask = () => {
+const EditTask = ({isOpen, onClose}) => {
   const id = useId();
 
   const { listId, taskId } = useParams();
@@ -48,10 +48,12 @@ const EditTask = () => {
 
       const ISOdate = limit ? new Date(limit).toISOString() : null;
 
-      void dispatch(updateTask({ id: taskId, title, detail, done, limit :ISOdate }))
+      void dispatch(
+        updateTask({ id: taskId, title, detail, done, limit: ISOdate }),
+      )
         .unwrap()
         .then(() => {
-          history.push(`/lists/${listId}`);
+          onClose();
         })
         .catch((err) => {
           setErrorMessage(err.message);
@@ -73,7 +75,7 @@ const EditTask = () => {
     void dispatch(deleteTask({ id: taskId }))
       .unwrap()
       .then(() => {
-        history.push(`/`);
+        onClose();
       })
       .catch((err) => {
         setErrorMessage(err.message);
@@ -85,7 +87,7 @@ const EditTask = () => {
 
   return (
     <main className="edit_list">
-      <BackButton />
+      <BackButton func={onClose} />
       <h2 className="edit_list__title">Edit List</h2>
       <p className="edit_list__error">{errorMessage}</p>
       <form className="edit_list__form" onSubmit={onSubmit}>

@@ -4,10 +4,11 @@ import { Link, useLocation } from "react-router-dom";
 import { PlusIcon } from "~/icons/PlusIcon";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogout } from "~/hooks/useLogout";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchLists } from "~/store/list/index";
 
 export const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const { pathname } = useLocation();
 
@@ -26,56 +27,68 @@ export const Sidebar = () => {
   }, []);
 
   return (
-    <div className="sidebar">
-      <Link to="/">
-        <h1 className="sidebar__title">Todos</h1>
-      </Link>
-      {isLoggedIn ? (
-        <>
-          {lists && (
-            <div className="sidebar__lists">
-              <h2 className="sidebar__lists_title">Lists</h2>
-              <ul className="sidebar__lists_items">
-                {lists.map((listItem) => (
-                  <li key={listItem.id}>
-                    <Link
-                      data-active={shouldHighlight && listItem.id === activeId}
-                      to={`/lists/${listItem.id}`}
-                      className="sidebar__lists_item"
-                    >
-                      <ListIcon aria-hidden className="sidebar__lists_icon" />
-                      {listItem.title}
+    <div className="sidebar_container">
+      <div className="sidebar_hamburger">
+        <button
+          className="sidebar_hamburger_button"
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
+          =
+        </button>
+      </div>
+      <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+        <Link to="/">
+          <h1 className="sidebar__title">Todos</h1>
+        </Link>
+        {isLoggedIn ? (
+          <>
+            {lists && (
+              <div className="sidebar__lists">
+                <h2 className="sidebar__lists_title">Lists</h2>
+                <ul className="sidebar__lists_items">
+                  {lists.map((listItem) => (
+                    <li key={listItem.id}>
+                      <Link
+                        data-active={
+                          shouldHighlight && listItem.id === activeId
+                        }
+                        to={`/lists/${listItem.id}`}
+                        className="sidebar__lists_item"
+                      >
+                        <ListIcon aria-hidden className="sidebar__lists_icon" />
+                        {listItem.title}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link to="/list/new" className="sidebar__lists_button">
+                      <PlusIcon className="sidebar__lists_plus_icon" />
+                      New List...
                     </Link>
                   </li>
-                ))}
-                <li>
-                  <Link to="/list/new" className="sidebar__lists_button">
-                    <PlusIcon className="sidebar__lists_plus_icon" />
-                    New List...
-                  </Link>
-                </li>
-              </ul>
+                </ul>
+              </div>
+            )}
+            <div className="sidebar__spacer" aria-hidden />
+            <div className="sidebar__account">
+              <p className="sidebar__account_name">{userName}</p>
+              <button
+                type="button"
+                className="sidebar__account_logout"
+                onClick={logout}
+              >
+                Logout
+              </button>
             </div>
-          )}
-          <div className="sidebar__spacer" aria-hidden />
-          <div className="sidebar__account">
-            <p className="sidebar__account_name">{userName}</p>
-            <button
-              type="button"
-              className="sidebar__account_logout"
-              onClick={logout}
-            >
-              Logout
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <Link to="/signin" className="sidebar__login">
-            Login
-          </Link>
-        </>
-      )}
+          </>
+        ) : (
+          <>
+            <Link to="/signin" className="sidebar__login">
+              Login
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 };

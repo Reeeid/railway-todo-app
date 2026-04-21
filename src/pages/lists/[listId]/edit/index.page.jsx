@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { BackButton } from "~/components/BackButton";
@@ -6,8 +6,18 @@ import "./index.css";
 import { fetchLists, updateList, deleteList } from "~/store/list";
 import { useId } from "~/hooks/useId";
 
-const EditList = () => {
+const EditList = ({ isOpen, onClose }) => {
   const id = useId();
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (isOpen) {
+      dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [isOpen]);
 
   const { listId } = useParams();
   const history = useHistory();
@@ -41,7 +51,7 @@ const EditList = () => {
       void dispatch(updateList({ id: listId, title }))
         .unwrap()
         .then(() => {
-          history.push(`/lists/${listId}`);
+          onClose();
         })
         .catch((err) => {
           setErrorMessage(err.message);
@@ -63,7 +73,7 @@ const EditList = () => {
     void dispatch(deleteList({ id: listId }))
       .unwrap()
       .then(() => {
-        history.push(`/`);
+        onClose();
       })
       .catch((err) => {
         setErrorMessage(err.message);
@@ -74,42 +84,52 @@ const EditList = () => {
   }, []);
 
   return (
-    <main className="edit_list">
-      <BackButton />
-      <h2 className="edit_list__title">Edit List</h2>
-      <p className="edit_list__error">{errorMessage}</p>
-      <form className="edit_list__form" onSubmit={onSubmit}>
-        <fieldset className="edit_list__form_field">
-          <label htmlFor={`${id}-title`} className="edit_list__form_label">
-            Name
-          </label>
-          <input
-            id={`${id}-title`}
-            className="app_input"
-            placeholder="Family"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-          />
-        </fieldset>
-        <div className="edit_list__form_actions">
-          <Link to="/" data-variant="secondary" className="app_button">
-            Cancel
-          </Link>
-          <div className="edit_list__form_actions_spacer"></div>
-          <button
-            type="button"
-            className="app_button edit_list__form_actions_delete"
-            disabled={isSubmitting}
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
-          <button type="submit" className="app_button" disabled={isSubmitting}>
-            Update
-          </button>
-        </div>
-      </form>
-    </main>
+    <dialog ref={dialogRef} className="edit_list__dialog" onClose={onClose}>
+      <main className="edit_list">
+        <BackButton func={onClose}/>
+        <h2 className="edit_list__title">Edit List</h2>
+        <p className="edit_list__error">{errorMessage}</p>
+        <form className="edit_list__form" onSubmit={onSubmit}>
+          <fieldset className="edit_list__form_field">
+            <label htmlFor={`${id}-title`} className="edit_list__form_label">
+              Name
+            </label>
+            <input
+              id={`${id}-title`}
+              className="app_input"
+              placeholder="Family"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </fieldset>
+          <div className="edit_list__form_actions">
+            <button
+              onClick={onClose}
+              data-variant="secondary"
+              className="app_button"
+            >
+              Cancel
+            </button>
+            <div className="edit_list__form_actions_spacer"></div>
+            <button
+              type="button"
+              className="app_button edit_list__form_actions_delete"
+              disabled={isSubmitting}
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+            <button
+              type="submit"
+              className="app_button"
+              disabled={isSubmitting}
+            >
+              Update
+            </button>
+          </div>
+        </form>
+      </main>
+    </dialog>
   );
 };
 
